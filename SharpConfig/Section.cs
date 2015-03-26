@@ -100,6 +100,37 @@ namespace SharpConfig
 
                     prop.SetValue( obj, value, null );
                 }
+                else
+                {
+                    var settingNew = new Setting(prop.Name);
+                    object[] defValueAttrs = prop.GetCustomAttributes(typeof(DefaultSettingAttribute), true);
+                    if (defValueAttrs.Length > 0)
+                    {
+                        DefaultSettingAttribute defValueAttr = defValueAttrs[0] as DefaultSettingAttribute;
+                        if (defValueAttr != null)
+                        {
+                            settingNew.SetValue(defValueAttr.Value);
+                        }
+                    }
+                    else
+                    {
+                        settingNew.SetValue(prop.GetValue(obj, null));
+
+                    }
+
+                    object[] descAttrs = prop.GetCustomAttributes(typeof(DescriptionSettingAttribute), true);
+                    if (descAttrs.Length > 0)
+                    {
+                        DescriptionSettingAttribute descAttr = descAttrs[0] as DescriptionSettingAttribute;
+                        if (descAttr != null)
+                        {
+                            settingNew.Comment = new Comment(descAttr.Description, ';');
+                        }
+                    }
+
+                    Add(settingNew);
+
+                }
             }
         }
 
