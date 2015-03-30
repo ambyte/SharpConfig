@@ -78,12 +78,17 @@ namespace SharpConfig
         /// </summary>
         /// 
         /// <param name="obj">The object that is modified based on the section.</param>
-        public void MapTo<T>( T obj ) where T : class
+        public void MapTo<T>( T obj, Type typeObj = null ) where T : class
         {
             if (obj == null)
                 throw new ArgumentNullException( "obj" );
 
             Type type = typeof( T );
+
+            if (typeObj!=null)
+            {
+                type = typeObj;
+            }
 
             var properties = type.GetProperties();
 
@@ -98,24 +103,40 @@ namespace SharpConfig
                 {
                     object value = setting.GetValue( prop.PropertyType );
 
-                    prop.SetValue( obj, value, null );
+                    if (prop.PropertyType.IsArray)
+                    {
+                        object[] valuesArray = (object[]) value;
+                        string[] stringArray = new string[valuesArray.Length];
+
+                        for (int i = 0; i < valuesArray.Length; i++)
+                        {
+                            var o = valuesArray[i];
+                            stringArray[i] = (string) o;
+                        }
+                        prop.SetValue(obj, stringArray, null);
+                    }
+                    else
+                    {
+                        prop.SetValue(obj, value, null);
+                    }
+                    
                 }
                 else
                 {
                     var settingNew = new Setting(prop.Name);
-                    object[] defValueAttrs = prop.GetCustomAttributes(typeof(DefaultSettingAttribute), true);
+                    object[] defValueAttrs = prop.GetCustomAttributes(typeof(DefaultSettingValueAttribute), true);
                     if (defValueAttrs.Length > 0)
                     {
-                        DefaultSettingAttribute defValueAttr = defValueAttrs[0] as DefaultSettingAttribute;
+                        DefaultSettingValueAttribute defValueAttr = defValueAttrs[0] as DefaultSettingValueAttribute;
                         if (defValueAttr != null)
                         {
                             settingNew.SetValue(defValueAttr.Value);
+                            prop.SetValue(obj, defValueAttr.Value,null);
                         }
                     }
                     else
                     {
                         settingNew.SetValue(prop.GetValue(obj, null));
-
                     }
 
                     object[] descAttrs = prop.GetCustomAttributes(typeof(DescriptionSettingAttribute), true);
