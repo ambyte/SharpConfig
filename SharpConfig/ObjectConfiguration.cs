@@ -4,6 +4,10 @@ using System.IO;
 
 namespace SharpConfig
 {
+    /// <summary>
+    /// Represents a configuration from object.
+    /// Configuration sections is the mapping from the user objects.
+    /// </summary>
     public class ObjectConfiguration
     {
         #region Fields
@@ -29,7 +33,7 @@ namespace SharpConfig
         /// Creates an object of a specific type and maps the settings
         /// from the public properties of the object to the section of the same name.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Object Type</typeparam>
         /// <returns>The created object.</returns>
         public T AddObject<T>() where T : class
         {
