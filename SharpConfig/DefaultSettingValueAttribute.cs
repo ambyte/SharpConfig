@@ -5,16 +5,11 @@ using System.Text;
 namespace SharpConfig
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public sealed class DefaultSettingAttribute : Attribute
+    public sealed class DefaultSettingValueAttribute : Attribute
     {
         private readonly object _value;
 
-        public DefaultSettingAttribute(object value)
-        {
-            _value = value;
-        }
-
-        public DefaultSettingAttribute(object value, string comment)
+        public DefaultSettingValueAttribute(object value)
         {
             _value = value;
         }
