@@ -140,6 +140,64 @@ If you already have a Person object and don't want to create a new one, you can 
 config["Person"].MapTo(person);
 ```
 
+Configuration from the user object
+---
+Configuration sections is the mapping from the user objects.
+
+First: Create a class, that represents settings, like this
+```csharp
+public class AppSettings
+    {
+        [DefaultSettingValueAttribute("hello")]
+        [DescriptionSetting("Value for textBox1")]
+        public string TextBox1Value { get; set; }
+
+        [DefaultSettingValueAttribute("")]
+        [DescriptionSetting("Value for textBox2")]
+        public string TextBox2Value { get; set; }
+
+        [DefaultSettingValueAttribute(false)]
+        public bool checkBox1Value { get; set; }
+
+        [DefaultSettingValueAttribute(true)]
+        public bool checkBox2Value { get; set; }
+
+        [DefaultSettingValueAttribute(new[] {"cool", "config"})]
+        public string[] listBoxValues { get; set; }
+    }
+```
+Second: Create a static class for manage the settings
+```csharp
+static class SettingsManager
+    {
+        public static AppSettingsOne AppSettings;
+        private static readonly ObjectConfiguration Configuration;
+
+        static SettingsManager()
+        {
+            Configuration = new ObjectConfiguration();
+            AppSettings = Configuration.AddObject<AppSettings>();
+        }
+
+        public static void SaveSettings()
+        {
+            Configuration.Save(Path.Combine(Environment.CurrentDirectory, "config.ini"));
+        }
+
+        public static void LoadSettings()
+        {
+            Configuration.Load(Path.Combine(Environment.CurrentDirectory, "config.ini"));
+        }
+    }
+```
+Third: Use the settings in your application
+
+You can add and remove the settings from your class, SharpConfig automatically update the configuration file.
+
+Also you can save encrypted configuration file.
+
+Look SampleTwo for more details.
+
 Installing via NuGet
 ---
 
